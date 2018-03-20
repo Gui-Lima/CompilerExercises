@@ -51,6 +51,9 @@ id = [A-Za-z|"_"]{allowed}+
 integer = 0|[1-9][0-9]*
 
 %%
+//ignoramos whitespace e comentários, e para os elementos léxicos descritos na página do github, de forma bem genérica, printamos
+//apenas o tipo de elemento e onde ele ocorreu, dessa forma ficaria bem dificil fazer qualquer coisa mais, pois 
+//qualquer reserved é visto como um token reserved, quando na verdade "true" e "class" não tem nada a ver, por exemplo.
 
 {integer} {System.out.println("token gerado foi um integer: '" + yytext() + "' na linha: " + yyline + ", coluna: " + yycolumn);}
 {operators} {System.out.println("token gerado foi um operador: '" + yytext() + "' na linha: " + yyline + ", coluna: " + yycolumn);}
@@ -58,7 +61,6 @@ integer = 0|[1-9][0-9]*
 {comment} {}
 {whitespace} {} 
 {reserved} {System.out.println("token gerado foi um reservado: '" + yytext() + "' na linha: " + yyline + ", coluna: " + yycolumn);}
-{char} {System.out.println("token gerado foi um char: '" + yytext() + "' na linha: " + yyline + ", coluna: " + yycolumn);}
 {id} {System.out.println("token gerado foi um id: '" + yytext() + "' na linha: " + yyline + ", coluna: " + yycolumn);}
 
 /* Insira as regras léxicas no espaço acima */     
