@@ -1,3 +1,6 @@
+##Meu arquivo da ativ feita está em src/main/resources/exemplo.jflex
+
+
 # IF688 - Teoria e Implementação de Linguagens Computacionais
 
 ## Atividade 1 - Análise Léxica
