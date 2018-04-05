@@ -28,16 +28,13 @@ public final class SetGenerator {
     			firsts = new HashSet<GeneralSymbol>();
     			firsts.add(element.getProduction().get(0));
     		}
-    		//firsts = new HashSet<GeneralSymbol>();
     		
-    		System.out.println(element.getProduction());
-    		
-    		//firsts.add(element.getProduction().get(0));
-    		System.out.println("Vai associar " + element.getProduction().get(0) + " com " + element.getNonterminal());
+    		//System.out.println(element.getProduction());
+    		//System.out.println("Vai associar " + element.getProduction().get(0) + " com " + element.getNonterminal());
     		first.put(element.getNonterminal(), firsts);
     		prev = current;
     	}
-    	System.out.println(first.toString());
+    	//System.out.println(first.toString());
         return first;
     }
 
@@ -52,6 +49,25 @@ public final class SetGenerator {
         /*
          * implemente aqui o método para retornar o conjunto follow
          */
+        
+        Set<GeneralSymbol> follows = new HashSet<GeneralSymbol>();
+        
+        List<Set<GeneralSymbol>> followList = new ArrayList<Set<GeneralSymbol>>();
+        //ArrayList<Set<GeneralSymbol>> followu = new ArrayList<HashSet<GeneralSymbol>>();
+        boolean startIndicator = true;
+        for(Production element : g.getProductions()) {
+        	if(startIndicator == true) {
+         		follows.add(SpecialSymbol.EOF);
+         		startIndicator = false;
+        	}
+        	
+        	System.out.println("Produção de " + element.getNonterminal() + " " + element.getProduction());	
+        	
+        	for(GeneralSymbol subElement : element.getProduction()) {
+        		System.out.println(subElement);
+        	}
+        }
+        
         
         return follow;
     }
