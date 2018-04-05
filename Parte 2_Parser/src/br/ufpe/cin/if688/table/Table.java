@@ -28,22 +28,36 @@ public final class Table {
         
         for(Production element : g.getProductions()) {
         	//se no first tem epson
-        	
+        	System.out.println(g);
         	if(first.get(element.getNonterminal()).contains(SpecialSymbol.EPSILON)) {
-        		System.out.println("No n terminal" + element.getNonterminal() + " h· epson no seu first");
+        		System.out.println("No nao terminal" + element.getNonterminal() + " ha epson no seu first");
         		for(GeneralSymbol x : first.get(element.getNonterminal())) {
-        			System.out.println("Mapeando o n„o terminal" + element.getNonterminal() + " e o terminal [" + x + "] para a regra" + element);
-        			LL1Key Xx = new LL1Key(element.getNonterminal(), x);
-        			parsingTable.put(Xx, element.getProduction());
+        			//se x n√£o for o epson
+        			if(!x.equals(SpecialSymbol.EPSILON) && !element.getProduction().contains(SpecialSymbol.EPSILON)) {
+        				System.out.println("Mapeando o nao terminal" + element.getNonterminal() + " e o terminal [" + x + "] para a regra" + element);
+            			LL1Key Xx = new LL1Key(element.getNonterminal(), x);
+            			parsingTable.put(Xx, element.getProduction());
+         			}
+       
+        			//se x for o epson
+        			else if(x.equals(SpecialSymbol.EPSILON) && element.getProduction().contains(SpecialSymbol.EPSILON)) {
+        				for(GeneralSymbol sbl : follow.get(element.getNonterminal())) {
+        					System.out.println("Mapeando o nao terminal" + element.getNonterminal() + " e o terminal [" + sbl + "] para a regra" + element);
+        					LL1Key Xx = new LL1Key(element.getNonterminal(), sbl);
+                			parsingTable.put(Xx, element.getProduction());
+        				}
+        				
+        				
+         			}
         		}
         		
         	}
         	
         	//se no first n tem epson
         	if(!first.get(element.getNonterminal()).contains(SpecialSymbol.EPSILON)) {
-        		System.out.println("No n terminal" + element.getNonterminal() + " n„o h· epson no seu first");
+        		System.out.println("No n terminal" + element.getNonterminal() + " nao ha epson no seu first");
         		for(GeneralSymbol x : first.get(element.getNonterminal())) {
-        			System.out.println("Mapeando o n„o terminal" + element.getNonterminal() + " e o terminal [" + x + "] para a regra" + element);
+        			System.out.println("Mapeando o nao terminal" + element.getNonterminal() + " e o terminal [" + x + "] para a regra" + element);
         			LL1Key Xx = new LL1Key(element.getNonterminal(), x);
         			parsingTable.put(Xx, element.getProduction());
         		}
