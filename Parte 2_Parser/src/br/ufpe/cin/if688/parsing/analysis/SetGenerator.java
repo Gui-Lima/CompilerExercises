@@ -30,7 +30,7 @@ public final class SetGenerator {
     		}
     		
     		//System.out.println(element.getProduction());
-    		//System.out.println("Vai associar " + element.getProduction().get(0) + " com " + element.getNonterminal());
+    	    //System.out.println("Vai associar " + element.getProduction().get(0) + " com " + element.getNonterminal());
     		first.put(element.getNonterminal(), firsts);
     		prev = current;
     	}
@@ -52,25 +52,96 @@ public final class SetGenerator {
         
         Set<GeneralSymbol> follows = new HashSet<GeneralSymbol>();
         
-        List<Set<GeneralSymbol>> followList = new ArrayList<Set<GeneralSymbol>>();
-        //ArrayList<Set<GeneralSymbol>> followu = new ArrayList<HashSet<GeneralSymbol>>();
+        ArrayList<Set<GeneralSymbol>> followList = new ArrayList<Set<GeneralSymbol>>();
+    
         boolean startIndicator = true;
         for(Production element : g.getProductions()) {
+        	//se for o primeiro, adiciona $ no follow
         	if(startIndicator == true) {
-         		follows.add(SpecialSymbol.EOF);
-         		startIndicator = false;
+        		follows.add(SpecialSymbol.EOF);
+        		follow.put(element.getNonterminal(), follows);
+        		startIndicator = false;
+        		follows = new HashSet<GeneralSymbol>();
         	}
         	
-        	System.out.println("ProduÃ§Ã£o de " + element.getNonterminal() + " " + element.getProduction());	
-        	
+        	//System.out.println(element);
+        	int i = 0;
         	for(GeneralSymbol subElement : element.getProduction()) {
-        		System.out.println(subElement);
+        		//System.out.println(subElement);
+        		if(isNonTerminal(subElement)) {
+        			//se for o ultimo
+        			if(element.getProduction().get(element.getProduction().size() -1 ).equals(subElement)) {
+        				//System.out.println("Esse não terminal (" + subElement  + ") é o último elemento da produção, logo, no seu follow há o follow de " + element.getNonterminal());
+        				follows.addAll(follow.get(element.getNonterminal()));
+        				for(Nonterminal nElement : g.getNonterminals()) {
+        					if(nElement.toString().equals(subElement.toString())) {
+        						follows.addAll(follow.get(nElement));
+        						follow.put(nElement , follows);
+        						//System.out.println("Foi adicionado ao follow de " + nElement + " os seguintes simbolos" + follows);
+        					}
+        				}
+        				follows = new HashSet<GeneralSymbol>();
+        			}	
+        			else {
+        				//se tiver nãoterminal dps
+        				if(isNonTerminal(element.getProduction().get(i+1))){
+        					//System.out.println(" Esse não terminal (" + subElement + ") não é o último, e depois dele vem o não terminal " + element.getProduction().get(i+1));
+        					//se o nonTerminal tem um epson no first
+        					if(first.get(element.getProduction().get(i+1)).contains(SpecialSymbol.EPSILON)) {
+        						follows.remove(SpecialSymbol.EPSILON);
+        						follows.addAll(follow.get(subElement));
+        						for(Nonterminal nElement : g.getNonterminals()) {
+        							if(nElement.toString().equals(subElement.toString())) {
+        								follow.put(nElement, follows);
+        								//System.out.println("Foi adicionado ao follow de " + nElement + " os seguintes simbolos" + follows);
+        							}
+        						}
+        					}		
+        					//se o non terminal não tem um epson no first
+        					if(!first.get(element.getProduction().get(i+1)).contains(SpecialSymbol.EPSILON)) {
+        						follows.addAll(first.get(element.getProduction().get(i+1)));
+        						follows.addAll(follow.get(subElement));
+        						for(Nonterminal nElement : g.getNonterminals()) {
+        							if(nElement.toString().equals(subElement.toString())) {
+        								follow.put(nElement, follows);
+        								//System.out.println("Foi adicionado ao follow de " + nElement + " os seguintes simbolos" + follows);
+        							}
+        						}
+        					}
+        				}
+        				//se tiver terminal dps
+        				if(!isNonTerminal(element.getProduction().get(i+1))) {
+        					//System.out.println(" Esse não terminal (" + subElement + ") não é o último, e depois dele vem o terminal " + element.getProduction().get(i+1));
+        					follows.add(element.getProduction().get(i+1));
+        					for(Nonterminal nElement : g.getNonterminals()) {
+            					if(nElement.toString().equals(subElement.toString())) {
+            						follows.addAll(follow.get(nElement));
+            						follow.put(nElement , follows);
+            						//System.out.println("Foi adicionado ao follow de " + nElement + " os seguintes simbolos" + follows);
+            					}
+            				}
+        				}
+        				follows = new HashSet<GeneralSymbol>();
+        			}
+        		}
+        	
+        		i++;
         	}
-        }
-        
-        
+        } 	
+        //System.out.println(follow);
         return follow;
     }
+    
+    public static boolean isNonTerminal(GeneralSymbol x) {
+    	if(x.toString().startsWith("<")) {
+    		return true;
+    	}
+    	else {
+    		return false;
+    	}
+    }
+    
+    
     
     //mÃ©todo para inicializar mapeamento nÃ£oterminais -> conjunto de sÃ­mbolos
     private static Map<Nonterminal, Set<GeneralSymbol>>
