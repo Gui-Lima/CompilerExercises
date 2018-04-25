@@ -1,4 +1,4 @@
-	package br.ufpe.cin.if688.ast;
+package br.ufpe.cin.if688.ast;
 
 import br.ufpe.cin.if688.visitor.IVisitor;
 

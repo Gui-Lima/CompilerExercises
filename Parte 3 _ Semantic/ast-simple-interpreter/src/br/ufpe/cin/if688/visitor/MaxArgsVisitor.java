@@ -1,5 +1,7 @@
 package br.ufpe.cin.if688.visitor;
 
+import javax.swing.text.IconView;
+
 import br.ufpe.cin.if688.ast.AssignStm;
 import br.ufpe.cin.if688.ast.CompoundStm;
 import br.ufpe.cin.if688.ast.EseqExp;
@@ -14,7 +16,7 @@ import br.ufpe.cin.if688.ast.PrintStm;
 import br.ufpe.cin.if688.ast.Stm;
 
 public class MaxArgsVisitor implements IVisitor<Integer> {
-
+	boolean printe = false;
 	@Override
 	public Integer visit(Stm s) {
 		return s.accept(this);
@@ -34,12 +36,14 @@ public class MaxArgsVisitor implements IVisitor<Integer> {
 
 	@Override
 	public Integer visit(PrintStm s) {
+		printe = true;
 		return s.getExps().accept(this);
 	}
 
 	@Override
 	public Integer visit(Exp e) {
 		// TODO Auto-generated method stub
+
 		return e.accept(this);
 	}
 
@@ -61,6 +65,10 @@ public class MaxArgsVisitor implements IVisitor<Integer> {
 
 	@Override
 	public Integer visit(OpExp e) {
+		// TODO Auto-generated method stub
+		if(printe == false) {
+			return 0;
+		}
 		return Math.max(e.getLeft().accept(this), e.getRight().accept(this));
 	}
 
@@ -81,6 +89,5 @@ public class MaxArgsVisitor implements IVisitor<Integer> {
 		// TODO Auto-generated method stub
 		return el.getHead().accept(this);
 	}
-	
 
 }

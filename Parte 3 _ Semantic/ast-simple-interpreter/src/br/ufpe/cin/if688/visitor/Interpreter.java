@@ -26,7 +26,8 @@ public class Interpreter implements IVisitor<Table> {
 
 	@Override
 	public Table visit(Stm s) {
-		return s.accept(this);
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -50,7 +51,7 @@ public class Interpreter implements IVisitor<Table> {
 	@Override
 	public Table visit(Exp e) {
 		// TODO Auto-generated method stub
-		return e.accept(this);
+		return null;
 	}
 
 	@Override
@@ -80,7 +81,7 @@ public class Interpreter implements IVisitor<Table> {
 	@Override
 	public Table visit(ExpList el) {
 		// TODO Auto-generated method stub
-		return el.accept(this);
+		return null;
 	}
 
 	@Override
