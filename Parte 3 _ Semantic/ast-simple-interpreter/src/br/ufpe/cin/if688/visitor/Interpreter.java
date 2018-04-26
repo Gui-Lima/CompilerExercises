@@ -12,6 +12,7 @@ import br.ufpe.cin.if688.ast.OpExp;
 import br.ufpe.cin.if688.ast.PairExpList;
 import br.ufpe.cin.if688.ast.PrintStm;
 import br.ufpe.cin.if688.ast.Stm;
+import br.ufpe.cin.if688.symboltable.IntAndTable;
 import br.ufpe.cin.if688.symboltable.Table;
 
 public class Interpreter implements IVisitor<Table> {
@@ -27,73 +28,107 @@ public class Interpreter implements IVisitor<Table> {
 	@Override
 	public Table visit(Stm s) {
 		// TODO Auto-generated method stub
-		return null;
+		return s.accept(this);
 	}
 
 	@Override
 	public Table visit(AssignStm s) {
 		// TODO Auto-generated method stub
-		return null;
+		Table nt = new Table(s.getId(), s.getExp().accept(this).value, t);
+		t = nt;
+		return t;
 	}
 
 	@Override
 	public Table visit(CompoundStm s) {
 		// TODO Auto-generated method stub
-		return null;
+		s.getStm1().accept(this);
+		s.getStm2().accept(this);
+		return t;
 	}
 
 	@Override
 	public Table visit(PrintStm s) {
-		// TODO Auto-generated method stub
-		return null;
+		return s.getExps().accept(this);
 	}
 
 	@Override
 	public Table visit(Exp e) {
 		// TODO Auto-generated method stub
-		return null;
+		IntAndTable iat;
+		return e.accept(this);
 	}
 
 	@Override
 	public Table visit(EseqExp e) {
 		// TODO Auto-generated method stub
-		return null;
+		e.getStm().accept(this);
+		e.getExp().accept(this);
+		Table nt = new Table("", e.getExp().accept(this).value, null);
+		return nt;
 	}
 
 	@Override
 	public Table visit(IdExp e) {
 		// TODO Auto-generated method stub
-		return null;
+		Table percorre = t;
+		while(percorre.id != e.getId() ) {
+			percorre = t.tail;
+		}
+		Table nt = new Table("", percorre.value, null);
+		return nt;
 	}
 
 	@Override
 	public Table visit(NumExp e) {
 		// TODO Auto-generated method stub
-		return null;
+		Table nt = new Table("", e.getNum(), null);
+		return nt;
 	}
 
 	@Override
 	public Table visit(OpExp e) {
 		// TODO Auto-generated method stub
+		if(e.getOper() == 1) {
+			Table nt = new Table("", e.getRight().accept(this).value + e.getLeft().accept(this).value, null);
+			return nt;
+		}
+		if(e.getOper() == 2) {
+			Table nt = new Table("", e.getLeft().accept(this).value - e.getRight().accept(this).value, null);
+			return nt;
+		}
+		if(e.getOper() == 3) {
+			Table nt = new Table("", e.getRight().accept(this).value * e.getLeft().accept(this).value, null);
+			return nt;
+		}
+		if(e.getOper() == 4) {
+			Table nt = new Table("", e.getLeft().accept(this).value / e.getRight().accept(this).value, null);
+			return nt;
+		}
+		
 		return null;
 	}
 
 	@Override
 	public Table visit(ExpList el) {
 		// TODO Auto-generated method stub
-		return null;
+		return el.accept(this);
 	}
 
 	@Override
 	public Table visit(PairExpList el) {
-		// TODO Auto-generated method stub
-		return null;
+		double i =  (double) el.getHead().accept(this).value;
+		System.out.printf("%.1f\n",i);
+		el.getTail().accept(this);
+		return t;
 	}
 
 	@Override
 	public Table visit(LastExpList el) {
 		// TODO Auto-generated method stub
-		return null;
+		double i =  (double) el.getHead().accept(this).value;
+		System.out.printf("%.1f\n",i);
+		return t;
 	}
 
 

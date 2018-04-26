@@ -49,7 +49,7 @@ public class IntAndTableVisitor implements IVisitor<IntAndTable> {
 	@Override
 	public IntAndTable visit(Exp e) {
 		// TODO Auto-generated method stub
-		return null;
+		return e.accept(this);
 	}
 
 	@Override
@@ -57,8 +57,6 @@ public class IntAndTableVisitor implements IVisitor<IntAndTable> {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
 	public IntAndTable visit(IdExp e) {
 		// TODO Auto-generated method stub
 		return null;
