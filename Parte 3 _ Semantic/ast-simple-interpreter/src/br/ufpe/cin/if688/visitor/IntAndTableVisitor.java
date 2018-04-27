@@ -59,19 +59,34 @@ public class IntAndTableVisitor implements IVisitor<IntAndTable> {
 	}
 	public IntAndTable visit(IdExp e) {
 		// TODO Auto-generated method stub
-		return null;
+		return e.accept(this);
 	}
 
 	@Override
 	public IntAndTable visit(NumExp e) {
 		// TODO Auto-generated method stub
-		return null;
+		return e.accept(this);
 	}
 
 	@Override
 	public IntAndTable visit(OpExp e) {
 		// TODO Auto-generated method stub
-		return null;
+		switch(e.getOper()) {
+		case 1: e.accept(this).result = e.getLeft().accept(this).result + e.getRight().accept(this).result;
+		return e.accept(this);
+	
+		case 2:e.accept(this).result = e.getRight().accept(this).result - e.getLeft().accept(this).result;
+		return e.accept(this);
+		
+		case 3:e.accept(this).result = e.getLeft().accept(this).result * e.getRight().accept(this).result;
+		return e.accept(this);
+		
+		case 4:e.accept(this).result = e.getRight().accept(this).result / e.getLeft().accept(this).result;
+		return e.accept(this);
+		
+		
+		}
+		return null ;
 	}
 
 	@Override

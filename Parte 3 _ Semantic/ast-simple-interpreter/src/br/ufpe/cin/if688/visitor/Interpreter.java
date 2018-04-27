@@ -33,29 +33,33 @@ public class Interpreter implements IVisitor<Table> {
 
 	@Override
 	public Table visit(AssignStm s) {
-		// TODO Auto-generated method stub
-		Table nt = new Table(s.getId(), s.getExp().accept(this).value, t);
-		t = nt;
+		String ids = s.getId();
+		Exp e = s.getExp();
+		//salvando a tabela antiga na tail dessa
+		Table returningTable = new Table(ids, e.accept(this).value, t);
+		t = returningTable;
 		return t;
 	}
 
 	@Override
 	public Table visit(CompoundStm s) {
-		// TODO Auto-generated method stub
-		s.getStm1().accept(this);
-		s.getStm2().accept(this);
+		//da handle nos dois statments
+		Stm s1 = s.getStm1();
+		Stm s2 = s.getStm2();
+		s1.accept(this);
+		s2.accept(this);
 		return t;
 	}
 
 	@Override
 	public Table visit(PrintStm s) {
+		//passa para a lista dar handle
 		return s.getExps().accept(this);
 	}
 
 	@Override
 	public Table visit(Exp e) {
 		// TODO Auto-generated method stub
-		IntAndTable iat;
 		return e.accept(this);
 	}
 
@@ -64,49 +68,60 @@ public class Interpreter implements IVisitor<Table> {
 		// TODO Auto-generated method stub
 		e.getStm().accept(this);
 		e.getExp().accept(this);
-		Table nt = new Table("", e.getExp().accept(this).value, null);
-		return nt;
+		Table returningTable = new Table("", e.getExp().accept(this).value, null);
+		return returningTable;
 	}
 
 	@Override
 	public Table visit(IdExp e) {
-		// TODO Auto-generated method stub
+		
 		Table percorre = t;
-		while(percorre.id != e.getId() ) {
+		String searchingId = e.getId();
+		while(percorre.id != searchingId ) {
+			//percorre a table para achar a Id referida acima
 			percorre = t.tail;
+			if(percorre == null){
+				System.out.println("Erro: usagem de varíavel não declarada");
+				return t;
+			}
 		}
-		Table nt = new Table("", percorre.value, null);
-		return nt;
+
+		//se sair do while, achou a ID
+		Table returningTable = new Table("", percorre.value, null);
+		return returningTable;
 	}
 
 	@Override
 	public Table visit(NumExp e) {
 		// TODO Auto-generated method stub
-		Table nt = new Table("", e.getNum(), null);
-		return nt;
+		Table returningTable = new Table("", e.getNum(), null);
+		return returningTable;
 	}
 
 	@Override
 	public Table visit(OpExp e) {
 		// TODO Auto-generated method stub
-		if(e.getOper() == 1) {
-			Table nt = new Table("", e.getRight().accept(this).value + e.getLeft().accept(this).value, null);
-			return nt;
+		if(e.getOper() == e.Plus) {
+			Table returningTable = new Table("", e.getRight().accept(this).value + e.getLeft().accept(this).value, null);
+			return returningTable;
 		}
-		if(e.getOper() == 2) {
-			Table nt = new Table("", e.getLeft().accept(this).value - e.getRight().accept(this).value, null);
-			return nt;
+		if(e.getOper() == e.Minus) {
+			Table returningTable = new Table("", e.getLeft().accept(this).value - e.getRight().accept(this).value, null);
+			return returningTable;
 		}
-		if(e.getOper() == 3) {
-			Table nt = new Table("", e.getRight().accept(this).value * e.getLeft().accept(this).value, null);
-			return nt;
+		if(e.getOper() == e.Times) {
+			Table returningTable = new Table("", e.getRight().accept(this).value * e.getLeft().accept(this).value, null);
+			return returningTable;
 		}
-		if(e.getOper() == 4) {
-			Table nt = new Table("", e.getLeft().accept(this).value / e.getRight().accept(this).value, null);
-			return nt;
+		if(e.getOper() == e.Div) {
+			Table returningTable = new Table("", e.getLeft().accept(this).value / e.getRight().accept(this).value, null);
+			return returningTable;
+		}
+		else{
+			System.out.println("Algo deu errado, OpExp deveria ser 1, 2 , 3 ou 4");
+			return null;
 		}
 		
-		return null;
 	}
 
 	@Override
@@ -117,8 +132,10 @@ public class Interpreter implements IVisitor<Table> {
 
 	@Override
 	public Table visit(PairExpList el) {
-		double i =  (double) el.getHead().accept(this).value;
-		System.out.printf("%.1f\n",i);
+		//converte para float e trata o head
+		float tobePrinted =  (float) el.getHead().accept(this).value;
+		System.out.printf("%.1f\n",tobePrinted);
+		//trata a tail da lista
 		el.getTail().accept(this);
 		return t;
 	}
@@ -126,8 +143,8 @@ public class Interpreter implements IVisitor<Table> {
 	@Override
 	public Table visit(LastExpList el) {
 		// TODO Auto-generated method stub
-		double i =  (double) el.getHead().accept(this).value;
-		System.out.printf("%.1f\n",i);
+		float tobePrinted =  (float) el.getHead().accept(this).value;
+		System.out.printf("%.1f\n",tobePrinted);
 		return t;
 	}
 
