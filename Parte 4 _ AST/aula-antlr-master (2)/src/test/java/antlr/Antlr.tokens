@@ -1,0 +1,12 @@
+VarDeclaration=3
+MainClass=1
+Type=5
+ClassDeclaration=2
+Identifier=10
+Expression=7
+MethodDeclaration=4
+Statement=6
+ExpAux=8
+INTEGER_LITERAL=9
+IDENTIFIER=11
+WS=12
