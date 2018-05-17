@@ -4,108 +4,155 @@ grammar Antlr;
     package antlr;
 }
 
-goal: MainClass ( ClassDeclaration )* ;
-
-MainClass :
- 'class'Identifier'{''public''static' 'Void' 'main' '(' 'String' '[' ']' Identifier ')' '{' Statement '}' '}';
-
-
-ClassDeclaration: 
-'class' Identifier ( 'extends' Identifier )? '{' ( VarDeclaration )* ( MethodDeclaration )* '}';
+goal	
+:	mainClass classDeclaration* EOF
+;
 
 
-VarDeclaration: Type Identifier ';';
+mainClass	
+:	'class' Identifier '{' 'public' 'static' 'Void' 'main' '(' 'String' '[' ']' Identifier ')' '{' statement '}' '}';
+
+classDeclaration	
+:	'class' Identifier ( 'extends' Identifier )? '{' varDeclaration* methodDeclaration* '}';
+
+varDeclaration	
+:	type Identifier ';';
+
+methodDeclaration	
+:	'public' type Identifier '(' ( type Identifier ( ',' type Identifier )* )? ')' '{' ( varDeclaration )* ( statement )* 'return' expression ';' '}';
+
+type	
+:	'int' '[' ']'
+|	'boolean'
+|	'int'
+|	Identifier
+;	
 
 
-MethodDeclaration: 
-'public' Type Identifier '(' ( Type Identifier ( ',' Type Identifier )* )? ')' '{' ( VarDeclaration )* ( Statement )* 'return' Expression ';' '}';
+statement:
+'{' ( statement )* '}'
 
 
-Type: 
-'int' '[' ']'
 |
-'boolean'
-|
-'int'
-|
-Identifier ;
+'if' '(' expression ')' statement 'else' statement
 
 
-
-Statement: 
-'{' ( Statement )* '}'
 |
-'if' '(' Expression ')' Statement 'else' Statement
-|
-'while' '(' Expression ')' Statement
-|
-'System.out.println' '(' Expression ')' ';'
-|
-Identifier '=' Expression ';'
-|
-Identifier '[' Expression ']' '=' Expression ';';
+'while' '(' expression ')' statement
 
 
+|
+'System.out.println' '(' expression ')' ';'
 
-Expression: 
-INTEGER_LITERAL (ExpAux)?
-|
-'true' (ExpAux)?
-|
-'false' (ExpAux)?
-|
-Identifier  (ExpAux)?
-|
-'this' (ExpAux)?
-|
-'new' 'int' '[' Expression ']' (ExpAux)?
-|
-'new' Identifier '(' ')' (ExpAux)?
-|
-'!' Expression (ExpAux)?
-|
-'(' Expression ')' (ExpAux)?;
 
-ExpAux:
-( '&&' | '<' | '+' | '-' | '*' ) Expression (ExpAux)?
 |
-'[' Expression ']' (ExpAux)?
+Identifier '=' expression ';'
+
+
 |
-'.' 'length' (ExpAux)?
-|
-'.' Identifier '(' ( Expression ( ',' Expression )* )? ')' (ExpAux)?
+Identifier '[' expression ']' '=' expression ';'
 ;
 
 
 
-INTEGER_LITERAL: [0-9][0-9]*;
+expression
+:
+expression ( '&&' | '<' | '+' | '-' | '*' ) expression
+|
+expression '[' expression ']'
+|
+expression '.' 'length'
+|
+expression '.' Identifier '(' ( expression ( ',' expression )* )? ')'
+|
+IntegerLiteral
+|
+'true'
+|
+'false'
+|
+Identifier
+|
+'this'
+|
+'new' 'int' '[' expression ']'
+|
+'new' Identifier '(' ')'
+;
 
+Identifier
+:	JavaLetter JavaLetterOrDigit*
+;
 
-Identifier: IDENTIFIER;
-IDENTIFIER:[A-Za-z0-9]+;
+fragment
+JavaLetter
+:	[a-zA-Z$_] 
+;
 
-WS: [ \t\r\n] -> skip;
+fragment
+JavaLetterOrDigit
+:	[a-zA-Z0-9$_]
+;
 
+IntegerLiteral
+:	DecimalIntegerLiteral
+;
 
+fragment
+DecimalIntegerLiteral
+:	DecimalNumeral IntegertypeSuffix?
+;
 
+fragment
+IntegertypeSuffix
+:	[lL]
+;
 
+fragment
+DecimalNumeral
+	:	'0'
+|	NonZeroDigit (Digits? | Underscores Digits)
+	;
 
+	fragment
+	Digits
+	:	Digit (DigitsAndUnderscores? Digit)?
+	;
 
+	fragment
+	Digit
+	:	'0'
+	|	NonZeroDigit
+	;
 
+	fragment
+	NonZeroDigit
+	:	[1-9]
+	;
 
+	fragment
+	DigitsAndUnderscores
+	:	DigitOrUnderscore+
+	;
 
+	fragment
+	DigitOrUnderscore
+	:	Digit
+	|	'_'
+	;
 
+	fragment
+	Underscores
+	:	'_'+
+	;
 
+	WS
+	:   [ \r\t\n]+ -> skip
+	;   
 
-
-
-
-
-
-
-
-
-
-
-
-
+	MULTILINE_COMMENT
+	:  '/*' .*? '*/' -> skip
+	;
+	LINE_COMMENT
+	:  '//' .*? '\n' -> skip
+;
