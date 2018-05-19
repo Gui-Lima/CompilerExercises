@@ -1,1 +1,0 @@
-class Teste { public static Void main (String [] Testando) {System.out.println(3);}}
