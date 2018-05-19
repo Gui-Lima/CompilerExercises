@@ -10,22 +10,22 @@ goal
 
 
 mainClass	
-:	'class' Identifier '{' 'public' 'static' 'Void' 'main' '(' 'String' '[' ']' Identifier ')' '{' statement '}' '}';
+:	'class' identifier '{' 'public' 'static' 'Void' 'main' '(' 'String' '[' ']' identifier ')' '{' statement '}' '}';
 
 classDeclaration	
-:	'class' Identifier ( 'extends' Identifier )? '{' varDeclaration* methodDeclaration* '}';
+:	'class' identifier ( 'extends' identifier )? '{' varDeclaration* methodDeclaration* '}';
 
 varDeclaration	
-:	type Identifier ';';
+:	type identifier ';';
 
 methodDeclaration	
-:	'public' type Identifier '(' ( type Identifier ( ',' type Identifier )* )? ')' '{' ( varDeclaration )* ( statement )* 'return' expression ';' '}';
+:	'public' type identifier '(' ( type identifier ( ',' type identifier )* )? ')' '{' ( varDeclaration )* ( statement )* 'return' expression ';' '}';
 
 type	
 :	'int' '[' ']'
 |	'boolean'
 |	'int'
-|	Identifier
+|	identifier
 ;	
 
 
@@ -46,11 +46,11 @@ statement:
 
 
 |
-Identifier '=' expression ';'
+identifier '=' expression ';'
 
 
 |
-Identifier '[' expression ']' '=' expression ';'
+identifier '[' expression ']' '=' expression ';'
 ;
 
 
@@ -63,96 +63,28 @@ expression '[' expression ']'
 |
 expression '.' 'length'
 |
-expression '.' Identifier '(' ( expression ( ',' expression )* )? ')'
+expression '.' identifier '(' ( expression ( ',' expression )* )? ')'
 |
-IntegerLiteral
+integerLiteral
 |
 'true'
 |
 'false'
 |
-Identifier
+identifier
 |
 'this'
 |
 'new' 'int' '[' expression ']'
 |
-'new' Identifier '(' ')'
+'new' identifier '(' ')'
 ;
 
-Identifier
-:	JavaLetter JavaLetterOrDigit*
-;
+identifier: IDENTIFIER;
+integerLiteral: INTEGER_LITERAL;
 
-fragment
-JavaLetter
-:	[a-zA-Z$_] 
-;
-
-fragment
-JavaLetterOrDigit
-:	[a-zA-Z0-9$_]
-;
-
-IntegerLiteral
-:	DecimalIntegerLiteral
-;
-
-fragment
-DecimalIntegerLiteral
-:	DecimalNumeral IntegertypeSuffix?
-;
-
-fragment
-IntegertypeSuffix
-:	[lL]
-;
-
-fragment
-DecimalNumeral
-	:	'0'
-|	NonZeroDigit (Digits? | Underscores Digits)
-	;
-
-	fragment
-	Digits
-	:	Digit (DigitsAndUnderscores? Digit)?
-	;
-
-	fragment
-	Digit
-	:	'0'
-	|	NonZeroDigit
-	;
-
-	fragment
-	NonZeroDigit
-	:	[1-9]
-	;
-
-	fragment
-	DigitsAndUnderscores
-	:	DigitOrUnderscore+
-	;
-
-	fragment
-	DigitOrUnderscore
-	:	Digit
-	|	'_'
-	;
-
-	fragment
-	Underscores
-	:	'_'+
-	;
-
-	WS
-	:   [ \r\t\n]+ -> skip
-	;   
-
-	MULTILINE_COMMENT
-	:  '/*' .*? '*/' -> skip
-	;
-	LINE_COMMENT
-	:  '//' .*? '\n' -> skip
-;
+COMMENT: '/*' .*? '*/' -> skip;
+LINE_COMMENT: '//' ~[\r\n]* -> skip;
+IDENTIFIER: [_a-zA-Z][_a-zA-Z0-9]*;
+INTEGER_LITERAL: [1-9][0-9]* | '0';
+WS: [ \t\f\r\n] -> skip;
