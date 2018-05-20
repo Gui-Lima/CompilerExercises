@@ -48,19 +48,15 @@ class QS{
 		while (cont02){
 		    i = i + 1 ;
 		    aux03 = number[i] ;
-		    if (aux03<v) {
-			cont02 = false;
-		    }
-		    else {
-			cont02 = true;
-		    } 
+		    if (!(aux03<v)) cont02 = false ;
+		    else cont02 = true ;
 		}
 		cont02 = true ;
 		while (cont02){
 		    j = j - 1 ;
 		    aux03 = number[j] ;
-		    if (v < aux03) {cont02 = false;} 
-		    else {cont02 = true;} 
+		    if (!(v < aux03)) cont02 = false ;
+		    else cont02 = true ;
 		}
 
 
@@ -68,8 +64,8 @@ class QS{
 		number[i] = number[j] ;
 		number[j] = t ;
 		//aux03 = i + 1 ;
-		if (j < i+1) {cont01 = false;} 
-		else {cont01 = true;} 
+		if ( j < (i+1)) cont01 = false ;
+		else cont01 = true ;
 	    }
 	    number[j] = number[i] ;
 	    number[i] = number[right] ;
@@ -77,7 +73,7 @@ class QS{
 	    nt = this.Sort(left,i-1);
 	    nt = this.Sort(i+1,right);
 	}
-	else {nt = 0;} 
+	else nt = 0 ;
 	return 0 ;
     }
 
@@ -86,7 +82,7 @@ class QS{
     public int Print(){
 	int j ;
 	j = 0 ;
-	while (j < size) {
+	while (j < (size)) {
 	    System.out.println(number[j]);
 	    j = j + 1 ;
 	}
@@ -114,3 +110,4 @@ class QS{
     }
 
 }
+
