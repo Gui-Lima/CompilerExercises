@@ -70,8 +70,9 @@ public class Main {
 		cdl.addElement(A);
 		cdl.addElement(B);
 		cdl.addElement(C);
-
-		InputStream stream = new FileInputStream("src/test/resources/teste.java"); 
+		
+		//change test program here
+		InputStream stream = new FileInputStream("src/test/resources/BubbleSort.java"); 
 		ANTLRInputStream input = new ANTLRInputStream(stream);
 		AntlrLexer lexer = new antlr.AntlrLexer(input);
 		CommonTokenStream token = new CommonTokenStream(lexer);

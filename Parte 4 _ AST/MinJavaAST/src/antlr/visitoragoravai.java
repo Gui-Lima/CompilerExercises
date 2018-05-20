@@ -23,7 +23,7 @@ import antlr.AntlrParser.VarDeclarationContext;
 import br.ufpe.cin.if688.minijava.ast.*;
 
 
-
+//eu não aguento mais
 
 public class visitoragoravai implements AntlrVisitor<Object> {
 
@@ -55,54 +55,54 @@ public class visitoragoravai implements AntlrVisitor<Object> {
 	}
 
 	public Object visitMethodDeclaration(MethodDeclarationContext ctx) {
-		Type t = (Type) ctx.type(0).accept(this);
-		Identifier i = (Identifier) ctx.identifier(0).accept(this);
+		
+		Type typ = (Type) ctx.type(0).accept(this);
+		Identifier id = (Identifier) ctx.identifier(0).accept(this);
 
 		FormalList fl = new FormalList();
 		Iterator<TypeContext> itt = (Iterator<TypeContext>) ctx.type().iterator();
 		Iterator<IdentifierContext> itd = (Iterator<IdentifierContext>) ctx.identifier().iterator();
 		itt.next();
 		itd.next();
-		while(itt.hasNext() && itd.hasNext()) {
-			Formal f = new Formal((Type) itt.next().accept(this), (Identifier) itd.next().accept(this));
-			fl.addElement(f);
+		while(itd.hasNext() && itt.hasNext()) {
+			Formal frm = new Formal((Type) itt.next().accept(this), (Identifier) itd.next().accept(this));
+			fl.addElement(frm);
 		}
 
-		VarDeclList vdl = new VarDeclList();
-		Iterator<VarDeclarationContext> itVdc = (Iterator<VarDeclarationContext>) ctx.varDeclaration().iterator();
-		while(itVdc.hasNext()) {
-			vdl.addElement((VarDecl) itVdc.next().accept(this));
+		VarDeclList varlist = new VarDeclList();
+		Iterator<VarDeclarationContext> iVarDec = (Iterator<VarDeclarationContext>) ctx.varDeclaration().iterator();
+		while(iVarDec.hasNext()) {
+			varlist.addElement((VarDecl) iVarDec.next().accept(this));
 		}
 		
-		StatementList sl = new StatementList();
+		StatementList stmList = new StatementList();
 		Iterator<StatementContext> itStm = (Iterator<StatementContext>) ctx.statement().iterator();
 		while(itStm.hasNext()) {
-			sl.addElement((Statement) itStm.next().accept(this));
+			stmList.addElement((Statement) itStm.next().accept(this));
 		}
 
-		Exp e = (Exp) ctx.expression().accept(this);
-		return new MethodDecl(t, i, fl, vdl, sl, e);
+		Exp expo = (Exp) ctx.expression().accept(this);
+		return new MethodDecl(typ, id, fl, varlist, stmList, expo);
 	}
 
 	public Object visitGoal(GoalContext ctx) {
-		MainClass mc = (MainClass) ctx.mainClass().accept(this);
+		MainClass mainC = (MainClass) ctx.mainClass().accept(this);
 		
 		ClassDeclList cdl = new ClassDeclList();
 		Iterator<ClassDeclarationContext> it =  (Iterator<ClassDeclarationContext>) ctx.classDeclaration().iterator();
 		while(it.hasNext()) {
 			cdl.addElement((ClassDecl) it.next().accept(this));
 		}
-		
-		return new Program(mc, cdl);
+		return new Program(mainC, cdl);
 	}
 
 	public Object visitExpression(ExpressionContext ctx) {
-		int numExp = ctx.expression().size();
-		int numChild = ctx.getChildCount();
+		int nExps = ctx.expression().size();
+		int nChield = ctx.getChildCount();
 		
-		if(numChild >= 5) {
-			String op = ctx.getChild(3).getText();
-			if (op.equals("(")) {
+		if(nChield >= 5) {
+			String operation = ctx.getChild(3).getText();
+			if (operation.equals("(")) {
 				Exp e = (Exp) ctx.expression(0).accept(this);
 				Identifier i = (Identifier) ctx.identifier().accept(this);
 
@@ -117,11 +117,11 @@ public class visitoragoravai implements AntlrVisitor<Object> {
 			}
 		}
 
-		if (numExp == 2) {
+		if (nExps == 2) {
 			Exp e1 = (Exp) ctx.expression(0).accept(this);
 			Exp e2 = (Exp) ctx.expression(1).accept(this);
 			
-			if (numChild == 3) {
+			if (nChield == 3) {
 				switch(ctx.getChild(1).getText()) {
 					case "&&" : return new And(e1, e2);
 					case "+"  : return new Plus(e1, e2);
@@ -130,7 +130,7 @@ public class visitoragoravai implements AntlrVisitor<Object> {
 					default  : return new Times(e1, e2);
 				}
 			} else return new ArrayLookup(e1, e2);
-		} else if (numExp == 1) {
+		} else if (nExps == 1) {
 			Exp e = (Exp) ctx.expression(0).accept(this);
 			switch(ctx.getChild(1).getText()) {
 				case "!"   : return new Not(e);
@@ -165,12 +165,12 @@ public class visitoragoravai implements AntlrVisitor<Object> {
 	public Object visitStatement(StatementContext ctx) {
 		switch(ctx.getStart().getText()) {
 		case "{" : 
-			StatementList sl = new StatementList();
+			StatementList stmList = new StatementList();
 			Iterator<StatementContext> itSc = (Iterator<StatementContext>) ctx.statement().iterator();
 			while(itSc.hasNext()) {
-				sl.addElement((Statement) itSc.next().accept(this));
+				stmList.addElement((Statement) itSc.next().accept(this));
 			}
-			return new Block(sl);
+			return new Block(stmList);
 		case "if" :
 			Exp e = (Exp) ctx.expression(0).accept(this);
 			Statement s1 = (Statement) ctx.statement(0).accept(this);

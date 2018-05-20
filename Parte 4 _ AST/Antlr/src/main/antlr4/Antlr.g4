@@ -78,6 +78,10 @@ identifier
 'new' 'int' '[' expression ']'
 |
 'new' identifier '(' ')'
+|
+'(' expression ')'
+|
+'!' expression
 ;
 
 identifier: IDENTIFIER;
