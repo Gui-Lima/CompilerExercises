@@ -132,7 +132,7 @@ public class visitoragoravai implements AntlrVisitor<Object> {
 			} else return new ArrayLookup(e1, e2);
 		} else if (nExps == 1) {
 			Exp e = (Exp) ctx.expression(0).accept(this);
-			switch(ctx.getChild(1).getText()) {
+			switch(ctx.getChild(0).getText()) {
 				case "!"   : return new Not(e);
 				case "."   : return new ArrayLength(e);
 				case "("   : return (Exp) ctx.expression(0).accept(this);
