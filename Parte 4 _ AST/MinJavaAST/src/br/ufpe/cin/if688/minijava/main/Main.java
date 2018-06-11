@@ -25,7 +25,9 @@ import br.ufpe.cin.if688.minijava.ast.Print;
 import br.ufpe.cin.if688.minijava.ast.Program;
 import br.ufpe.cin.if688.minijava.ast.VarDecl;
 import br.ufpe.cin.if688.minijava.ast.VarDeclList;
+import br.ufpe.cin.if688.minijava.visitor.BuildSymbolTableVisitor;
 import br.ufpe.cin.if688.minijava.visitor.PrettyPrintVisitor;
+import br.ufpe.cin.if688.minijava.visitor.TypeCheckVisitor;
 
 public class Main {
 
@@ -76,9 +78,15 @@ public class Main {
 		ANTLRInputStream input = new ANTLRInputStream(stream);
 		AntlrLexer lexer = new antlr.AntlrLexer(input);
 		CommonTokenStream token = new CommonTokenStream(lexer);
+		//atv 5 setup
+		BuildSymbolTableVisitor stVis = new BuildSymbolTableVisitor();
+		
 		
 		Program prog = (Program) new visitoragoravai().visit(new AntlrParser(token).goal());
-		prog.accept(new PrettyPrintVisitor());
+		prog.accept(stVis); 
+		prog.accept(new TypeCheckVisitor(stVis.getSymbolTable())); 
+
+		//prog.accept(new PrettyPrintVisitor());
 		
 	}
 
