@@ -58,7 +58,7 @@ public class visitoragoravai implements AntlrVisitor<Object> {
 		
 		Type typ = (Type) ctx.type(0).accept(this);
 		Identifier id = (Identifier) ctx.identifier(0).accept(this);
-
+		
 		FormalList fl = new FormalList();
 		Iterator<TypeContext> itt = (Iterator<TypeContext>) ctx.type().iterator();
 		Iterator<IdentifierContext> itd = (Iterator<IdentifierContext>) ctx.identifier().iterator();
@@ -157,7 +157,9 @@ public class visitoragoravai implements AntlrVisitor<Object> {
 
 	public Object visitMainClass(MainClassContext ctx) {
 		Identifier i1 = (Identifier) ctx.identifier(0).accept(this);
+
 		Identifier i2 = (Identifier) ctx.identifier(1).accept(this);
+
 		Statement s = (Statement) ctx.statement().accept(this);
 		return new MainClass(i1, i2, s);
 	}
