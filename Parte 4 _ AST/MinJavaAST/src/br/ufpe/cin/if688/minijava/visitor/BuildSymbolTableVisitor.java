@@ -149,7 +149,7 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 			}
 		}
 		else{
-			if(!symbolTable.addClass(n.i.s, currClass.getId())){
+			if(!symbolTable.addClass(n.i.s, null)){
 				System.out.println("Já tem uma classe com esse nome");
 				return null;
 			}
@@ -228,18 +228,22 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 		 *	int size ;
 		 */
 	
-		System.out.println("	VarDecl");
 		
 		if(currMethod != null) {
-			//eu não sei se devo adicionar na classe também
-			currMethod.addVar(n.i.s, n.t);
+				if(!currMethod.addVar(n.i.s, n.t)) {
+					System.out.println("Variável já declarada nesse método");
+					return null;
+				}
 		}
 		else {
-			currClass.addVar(n.i.s, n.t);
+			if(!currClass.addVar(n.i.s, n.t)) {
+				System.out.println("Variável já declarada nessa classe");
+				return null;
+			}
 		}
 		
-		//n.t.accept(this);
-		//n.i.accept(this);
+		n.t.accept(this);
+		n.i.accept(this);
 		return null;
 	}
 
@@ -257,12 +261,12 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 		 *}
 		 */
 		
-		
-		System.out.println("	MethodDecl");
-		
 		//Temos que criar esse método na classe atual, setar ele como o current e pegar os parâmetros e tal
 		if(currClass != null) {
-			currClass.addMethod(n.i.s, n.t);
+			if(!currClass.addMethod(n.i.s, n.t)) {
+				System.out.println("Método já criado nessa clase");
+				return null;
+			}
 		}
 		else {
 			System.out.println("Erro: Método declarado fora de classes");
@@ -271,8 +275,8 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 		
 		currMethod = currClass.getMethod(n.i.s);
 		
-		//n.t.accept(this);
-		//n.i.accept(this);
+		n.t.accept(this);
+		n.i.accept(this);
 		
 		//lista de parâmetros, pelo q entendi
 		for (int i = 0; i < n.fl.size(); i++) {
@@ -286,168 +290,135 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 		for (int i = 0; i < n.sl.size(); i++) {
 			n.sl.elementAt(i).accept(this);
 		}
-		//n sei
+		
 		n.e.accept(this);
 		return null;
 	}
 
-	// Type t;
-	// Identifier i;
+	
 	public Void visit(Formal n) {
 		/*Isso aqui é chamado Formal mas é na verdade um parâmetro!!!
 		 */
-		
-		System.out.println("	Formal");
+
 		
 		//Precisamos adicionar esse parâmetro no método em que estamos
-		if(currMethod!=null)
-			currMethod.addParam(n.i.s, n.t);
-		else
+		if(currMethod!=null) {
+			if(!currMethod.addParam(n.i.s, n.t)) {
+				System.out.println("Parâmetro com mesmo nome!");
+				return null;
+			}
+		}
+			
+		else {
+			System.out.println("Não há método!");
 			return null;
+		}
+			
 		
-		//n.t.accept(this);
-		//n.i.accept(this);
+		n.t.accept(this);
+		n.i.accept(this);
 		return null;
 	}
 
 	public Void visit(IntArrayType n) {
-		System.out.println("IntArrayType");
 		return null;
 	}
 
 	public Void visit(BooleanType n) {
-		System.out.println("BooleanType");
 		return null;
 	}
 
 	public Void visit(IntegerType n) {
-		System.out.println("IntegerType");
 		return null;
 	}
 
-	// String s;
 	public Void visit(IdentifierType n) {
-		System.out.println("IdType");
 		return null;
 	}
 
-	// StatementList sl;
+
 	public Void visit(Block n) {
-		System.out.println("Block");
 		for (int i = 0; i < n.sl.size(); i++) {
 			n.sl.elementAt(i).accept(this);
 		}
 		return null;
 	}
 
-	// Exp e;
-	// Statement s1,s2;
 	public Void visit(If n) {
-		System.out.println("if");
 		n.e.accept(this);
 		n.s1.accept(this);
 		n.s2.accept(this);
 		return null;
 	}
 
-	// Exp e;
-	// Statement s;
+
 	public Void visit(While n) {
-		System.out.println("while");
 		n.e.accept(this);
 		n.s.accept(this);
 		return null;
 	}
 
-	// Exp e;
-	public Void visit(Print n) {
-		//Um print! No momento estamos fazendo uma tabela de símbolos, não vejo nem pra que visitar oque tem dentro do print
-		//visto que não vai ter nenhuma declaração dentro dele(acho)
-		
-		System.out.println("	Print statment");
-		//n.e.accept(this);
+	public Void visit(Print n) {	
+		n.e.accept(this);
 		return null;
 	}
 
-	// Identifier i;
-	// Exp e;
 	public Void visit(Assign n) {
-		System.out.println("Assign");
 		n.i.accept(this);
 		n.e.accept(this);
 		return null;
 	}
 
-	// Identifier i;
-	// Exp e1,e2;
 	public Void visit(ArrayAssign n) {
-		System.out.println("Array Assign");
 		n.i.accept(this);
 		n.e1.accept(this);
 		n.e2.accept(this);
 		return null;
 	}
 
-	// Exp e1,e2;
 	public Void visit(And n) {
-		System.out.println("And");
 		n.e1.accept(this);
 		n.e2.accept(this);
 		return null;
 	}
 
-	// Exp e1,e2;
 	public Void visit(LessThan n) {
-		System.out.println("<");
 		n.e1.accept(this);
 		n.e2.accept(this);
 		return null;
 	}
 
-	// Exp e1,e2;
 	public Void visit(Plus n) {
-		System.out.println("+");
 		n.e1.accept(this);
 		n.e2.accept(this);
 		return null;
 	}
 
-	// Exp e1,e2;
 	public Void visit(Minus n) {
-		System.out.println("-");
 		n.e1.accept(this);
 		n.e2.accept(this);
 		return null;
 	}
 
-	// Exp e1,e2;
 	public Void visit(Times n) {
-		System.out.println("*");
 		n.e1.accept(this);
 		n.e2.accept(this);
 		return null;
 	}
 
-	// Exp e1,e2;
 	public Void visit(ArrayLookup n) {
-		System.out.println("Array Lookup");
 		n.e1.accept(this);
 		n.e2.accept(this);
 		return null;
 	}
 
-	// Exp e;
 	public Void visit(ArrayLength n) {
-		System.out.println("Array Length");
 		n.e.accept(this);
 		return null;
 	}
 
-	// Exp e;
-	// Identifier i;
-	// ExpList el;
+
 	public Void visit(Call n) {
-		System.out.println("Call");
 		n.e.accept(this);
 		n.i.accept(this);
 		for (int i = 0; i < n.el.size(); i++) {
@@ -456,56 +427,43 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 		return null;
 	}
 
-	// int i;
 	public Void visit(IntegerLiteral n) {
-		System.out.println("Int Literal");
 		return null;
 	}
 
 	public Void visit(True n) {
-		System.out.println("True");
 		return null;
 	}
 
 	public Void visit(False n) {
-		System.out.println("False");
 		return null;
 	}
 
-	// String s;
+
 	public Void visit(IdentifierExp n) {
-		System.out.println("iDEXP");
 		return null;
 	}
 
 	public Void visit(This n) {
-		System.out.println("This");
 		return null;
 	}
 
-	// Exp e;
+
 	public Void visit(NewArray n) {
-		System.out.println("NewArray");
 		n.e.accept(this);
 		return null;
 	}
 
-	// Identifier i;
 	public Void visit(NewObject n) {
-		System.out.println("NewObject");
 		return null;
 	}
 
-	// Exp e;
 	public Void visit(Not n) {
-		System.out.println("!");
 		n.e.accept(this);
 		return null;
 	}
 
-	// String s;
 	public Void visit(Identifier n) {
-		System.out.println("Id");
 		return null;
 	}
 }
