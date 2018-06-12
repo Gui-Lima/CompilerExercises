@@ -227,7 +227,6 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 		 *	int[] number ;
 		 *	int size ;
 		 */
-	
 		
 		if(currMethod != null) {
 				if(!currMethod.addVar(n.i.s, n.t)) {

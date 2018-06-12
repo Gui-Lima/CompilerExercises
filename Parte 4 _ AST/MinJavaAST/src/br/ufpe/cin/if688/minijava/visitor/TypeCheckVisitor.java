@@ -45,18 +45,23 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 		symbolTable = st;
 	}
 
-	// MainClass m;
-	// ClassDeclList cl;
+	/*Aqui temos que definir as regras que vamos checar:
+	 * 	
+	 * 
+	 * 
+	 * 
+	 * 
+	 */
+	
 	public Type visit(Program n) {
 		n.m.accept(this);
 		for (int i = 0; i < n.cl.size(); i++) {
 			n.cl.elementAt(i).accept(this);
 		}
+		
 		return null;
 	}
 
-	// Identifier i1,i2;
-	// Statement s;
 	public Type visit(MainClass n) {
 		n.i1.accept(this);
 		n.i2.accept(this);
@@ -64,9 +69,6 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 		return null;
 	}
 
-	// Identifier i;
-	// VarDeclList vl;
-	// MethodDeclList ml;
 	public Type visit(ClassDeclSimple n) {
 		n.i.accept(this);
 		for (int i = 0; i < n.vl.size(); i++) {
@@ -78,10 +80,7 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 		return null;
 	}
 
-	// Identifier i;
-	// Identifier j;
-	// VarDeclList vl;
-	// MethodDeclList ml;
+	
 	public Type visit(ClassDeclExtends n) {
 		n.i.accept(this);
 		n.j.accept(this);
@@ -94,20 +93,12 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 		return null;
 	}
 
-	// Type t;
-	// Identifier i;
 	public Type visit(VarDecl n) {
 		n.t.accept(this);
 		n.i.accept(this);
 		return null;
 	}
 
-	// Type t;
-	// Identifier i;
-	// FormalList fl;
-	// VarDeclList vl;
-	// StatementList sl;
-	// Exp e;
 	public Type visit(MethodDecl n) {
 		n.t.accept(this);
 		n.i.accept(this);
@@ -124,8 +115,6 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 		return null;
 	}
 
-	// Type t;
-	// Identifier i;
 	public Type visit(Formal n) {
 		n.t.accept(this);
 		n.i.accept(this);
