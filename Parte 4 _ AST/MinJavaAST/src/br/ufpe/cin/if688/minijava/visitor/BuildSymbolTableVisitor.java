@@ -51,6 +51,7 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 		return symbolTable;
 	}
 
+
 	private Class currClass;
 	private Method currMethod;
 
@@ -77,7 +78,7 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 			....
 			
 			Em geral aqui não temos nada interessante, vamos visitar primeiro o main, depois
-			as outras classes. Lá faremos coisas com a SymbolTable
+			as outras classes. Lá faremos coisas com a this.symbolTable
 		 */
 
 		n.m.accept(this);
@@ -93,7 +94,7 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 		
 		/*
 		 * A mainClass de um programa. 
-		 * No parâmetro i1 temos o nome da classe principal, no caso temos que adiciona-la a symbolTable
+		 * No parâmetro i1 temos o nome da classe principal, no caso temos que adiciona-la a this.symbolTable
 		 * No parâmetro i2 temos o nome do stringArgs[], que geralmente é 'a' nos testes
 		 * No parâmetro s temos o corpo do main, no qual acontece as coisas interessantes
 		 * 
@@ -104,9 +105,9 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 		 */
 		
 		//Adicionando a classe principal(que fica em cima do Main), ela não tem pai
-		symbolTable.addClass(n.i1.s, null);
+		this.symbolTable.addClass(n.i1.s, null);
 		//Como estamos dentro do Main, temos que setar a currentClass para justamente oque acabou de adicionar
-		this.currClass = symbolTable.getClass(n.i1.s);
+		this.currClass = this.symbolTable.getClass(n.i1.s);
 		//Assim como o método atual que estamos, que é o Main! temos que adiciona-lo na classe. O tipo é null pq void
 		this.currClass.addMethod("main", null );
 		this.currMethod = currClass.getMethod("main");
@@ -143,20 +144,20 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 		//Adicionando a classe atual como uma filha da currentClass, caso seja alguma
 		if(this.currClass != null) {
 			//significa que já existia uma classe com esse nome
-			if(!symbolTable.addClass(n.i.s, this.currClass.getId())){
+			if(!this.symbolTable.addClass(n.i.s, this.currClass.getId())){
 				System.out.println("Já tem uma classe com esse nome");
 				return null;
 			}
 		}
 		else{
-			if(!symbolTable.addClass(n.i.s, null)){
+			if(!this.symbolTable.addClass(n.i.s, null)){
 				System.out.println("Já tem uma classe com esse nome");
 				return null;
 			}
 		}
 		
 		//Agora que estamos entrando na classe, ela passa a ser a currentClass
-		this.currClass = symbolTable.getClass(n.i.s);
+		this.currClass = this.symbolTable.getClass(n.i.s);
 		
 		n.i.accept(this);
 		
@@ -193,19 +194,19 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 		//Adicionando a classe atual como uma filha da currentClass, caso seja alguma
 		if(this.currClass != null) {
 			//significa que já existia uma classe com esse nome
-			if(!symbolTable.addClass(n.i.s, this.currClass.getId())){
+			if(!this.symbolTable.addClass(n.i.s, this.currClass.getId())){
 				System.out.println("Já tem uma classe com esse nome");
 				return null;
 			}
 		}
 		else{
-			if(!symbolTable.addClass(n.i.s, this.currClass.getId())){
+			if(!this.symbolTable.addClass(n.i.s, this.currClass.getId())){
 				System.out.println("Já tem uma classe com esse nome");
 				return null;
 			}
 		}
 		
-		this.currClass = symbolTable.getClass(n.i.s);
+		this.currClass = this.symbolTable.getClass(n.i.s);
 				
 		n.i.accept(this);
 		n.j.accept(this);
