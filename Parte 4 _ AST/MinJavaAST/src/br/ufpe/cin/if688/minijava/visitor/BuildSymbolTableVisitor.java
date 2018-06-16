@@ -51,6 +51,7 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 		return symbolTable;
 	}
 
+
 	private Class currClass;
 	private Method currMethod;
 
@@ -77,7 +78,7 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 			....
 			
 			Em geral aqui não temos nada interessante, vamos visitar primeiro o main, depois
-			as outras classes. Lá faremos coisas com a SymbolTable
+			as outras classes. Lá faremos coisas com a this.symbolTable
 		 */
 
 		n.m.accept(this);
@@ -93,7 +94,7 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 		
 		/*
 		 * A mainClass de um programa. 
-		 * No parâmetro i1 temos o nome da classe principal, no caso temos que adiciona-la a symbolTable
+		 * No parâmetro i1 temos o nome da classe principal, no caso temos que adiciona-la a this.symbolTable
 		 * No parâmetro i2 temos o nome do stringArgs[], que geralmente é 'a' nos testes
 		 * No parâmetro s temos o corpo do main, no qual acontece as coisas interessantes
 		 * 
@@ -104,22 +105,22 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 		 */
 		
 		//Adicionando a classe principal(que fica em cima do Main), ela não tem pai
-		symbolTable.addClass(n.i1.s, null);
+		this.symbolTable.addClass(n.i1.s, null);
 		//Como estamos dentro do Main, temos que setar a currentClass para justamente oque acabou de adicionar
-		currClass = symbolTable.getClass(n.i1.s);
+		this.currClass = this.symbolTable.getClass(n.i1.s);
 		//Assim como o método atual que estamos, que é o Main! temos que adiciona-lo na classe. O tipo é null pq void
-		currClass.addMethod("main", null );
-		currMethod = currClass.getMethod("main");
+		this.currClass.addMethod("main", null );
+		this.currMethod = currClass.getMethod("main");
 		//Eu ainda não sei se esse é o tipo certo, é um array de Strings
-		currMethod.addParam(n.i2.s, new IntArrayType());
+		this.currMethod.addParam(n.i2.s, new IntArrayType());
 		
 		n.i1.accept(this);
 		n.i2.accept(this);
 		n.s.accept(this);
 		
 		//reset the currClass and currMethod after leaves main
-		currClass = null;
-		currMethod = null;
+		this.currClass = null;
+		this.currMethod = null;
 		return null;
 	}
 
@@ -141,22 +142,22 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 		
 		
 		//Adicionando a classe atual como uma filha da currentClass, caso seja alguma
-		if(currClass != null) {
+		if(this.currClass != null) {
 			//significa que já existia uma classe com esse nome
-			if(!symbolTable.addClass(n.i.s, currClass.getId())){
+			if(!this.symbolTable.addClass(n.i.s, this.currClass.getId())){
 				System.out.println("Já tem uma classe com esse nome");
 				return null;
 			}
 		}
 		else{
-			if(!symbolTable.addClass(n.i.s, null)){
+			if(!this.symbolTable.addClass(n.i.s, null)){
 				System.out.println("Já tem uma classe com esse nome");
 				return null;
 			}
 		}
 		
 		//Agora que estamos entrando na classe, ela passa a ser a currentClass
-		currClass = symbolTable.getClass(n.i.s);
+		this.currClass = this.symbolTable.getClass(n.i.s);
 		
 		n.i.accept(this);
 		
@@ -169,7 +170,7 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 			n.ml.elementAt(i).accept(this);
 		}
 		
-		currClass = null;
+		this.currClass = null;
 		return null;
 	}
 
@@ -191,21 +192,21 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 		
 		
 		//Adicionando a classe atual como uma filha da currentClass, caso seja alguma
-		if(currClass != null) {
+		if(this.currClass != null) {
 			//significa que já existia uma classe com esse nome
-			if(!symbolTable.addClass(n.i.s, currClass.getId())){
+			if(!this.symbolTable.addClass(n.i.s, this.currClass.getId())){
 				System.out.println("Já tem uma classe com esse nome");
 				return null;
 			}
 		}
 		else{
-			if(!symbolTable.addClass(n.i.s, currClass.getId())){
+			if(!this.symbolTable.addClass(n.i.s, this.currClass.getId())){
 				System.out.println("Já tem uma classe com esse nome");
 				return null;
 			}
 		}
 		
-		currClass = symbolTable.getClass(n.i.s);
+		this.currClass = this.symbolTable.getClass(n.i.s);
 				
 		n.i.accept(this);
 		n.j.accept(this);
@@ -228,14 +229,14 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 		 *	int size ;
 		 */
 		
-		if(currMethod != null) {
-				if(!currMethod.addVar(n.i.s, n.t)) {
+		if(this.currMethod != null) {
+				if(!this.currMethod.addVar(n.i.s, n.t)) {
 					System.out.println("Variável já declarada nesse método");
 					return null;
 				}
 		}
 		else {
-			if(!currClass.addVar(n.i.s, n.t)) {
+			if(!this.currClass.addVar(n.i.s, n.t)) {
 				System.out.println("Variável já declarada nessa classe");
 				return null;
 			}
@@ -261,8 +262,8 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 		 */
 		
 		//Temos que criar esse método na classe atual, setar ele como o current e pegar os parâmetros e tal
-		if(currClass != null) {
-			if(!currClass.addMethod(n.i.s, n.t)) {
+		if(this.currClass != null) {
+			if(!this.currClass.addMethod(n.i.s, n.t)) {
 				System.out.println("Método já criado nessa clase");
 				return null;
 			}
@@ -272,7 +273,7 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 			return null;
 		}
 		
-		currMethod = currClass.getMethod(n.i.s);
+		this.currMethod = this.currClass.getMethod(n.i.s);
 		
 		n.t.accept(this);
 		n.i.accept(this);
@@ -301,8 +302,8 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 
 		
 		//Precisamos adicionar esse parâmetro no método em que estamos
-		if(currMethod!=null) {
-			if(!currMethod.addParam(n.i.s, n.t)) {
+		if(this.currMethod!=null) {
+			if(!this.currMethod.addParam(n.i.s, n.t)) {
 				System.out.println("Parâmetro com mesmo nome!");
 				return null;
 			}
