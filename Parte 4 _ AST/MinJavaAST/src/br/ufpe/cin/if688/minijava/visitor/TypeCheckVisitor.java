@@ -90,7 +90,7 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 	public Type visit(ClassDeclSimple n) {
 		System.out.println("Entrou numa classe ");
 		currClass = symbolTable.getClass(n.i.s);
-		//assert this class returns what expected
+		
 		n.i.accept(this);
 		for (int i = 0; i < n.vl.size(); i++) {
 			n.vl.elementAt(i).accept(this);
