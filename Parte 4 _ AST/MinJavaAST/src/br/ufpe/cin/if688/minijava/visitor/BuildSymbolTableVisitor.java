@@ -40,7 +40,6 @@ import br.ufpe.cin.if688.minijava.symboltable.SymbolTable;
 
 public class BuildSymbolTableVisitor implements IVisitor<Void> {
 
-	//talvez tenha que botar this. em tudo
 	SymbolTable symbolTable;
 
 	public BuildSymbolTableVisitor() {

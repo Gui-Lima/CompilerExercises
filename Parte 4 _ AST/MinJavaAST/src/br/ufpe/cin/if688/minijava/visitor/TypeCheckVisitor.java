@@ -57,15 +57,25 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 	}
 
 	/*Aqui temos que definir as regras que vamos checar:
-	 * 	
+	 * . Métodos retornam oque foi declarado	
+	 * . If é um boolean
+	 * . While é um boolean
+	 * . O valor assignado para uma variável é do mesmo tipo que o declarado
+	 * . Ao tentar acessar um index, o número usado é um inteiro
+	 * . O valor assignado para um array é do mesmo tipo que o declarado
+	 * . Numa chamada de função, os parâmetros devem ser do mesmo tipo e na mesma quantidade que declarados
+	 */
+	
+	/* Outros detalhes de implementação:
+	 * 	 Numa call, nós temos que mudar o currClass para a classe onde está presente o método sendo chamado, para que possamos checar as
+	 * 	 variáveis usadas no escopo certo
 	 * 
-	 * 
-	 * 
-	 * 
+	 *	Consequentemente num identifier temos que ver se a variável é de um método, classe, parâmetro ou outra coisa, para dar o Get na
+	 *	SymbolTable
 	 */
 	
 	public Type visit(Program n) {
-		System.out.println("Visitando o programa ");
+		
 		n.m.accept(this);
 		for (int i = 0; i < n.cl.size(); i++) {
 			n.cl.elementAt(i).accept(this);
@@ -75,7 +85,7 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 	}
 
 	public Type visit(MainClass n) {
-		System.out.println("Entrou na main Class ");
+		
 		currClass = symbolTable.getClass(n.i1.s);
 		currMethod = symbolTable.getMethod("main", currClass.getId());
 		
@@ -88,7 +98,7 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 	}
 
 	public Type visit(ClassDeclSimple n) {
-		System.out.println("Entrou numa classe ");
+		
 		currClass = symbolTable.getClass(n.i.s);
 		
 		n.i.accept(this);
@@ -105,7 +115,7 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 
 	
 	public Type visit(ClassDeclExtends n) {
-		System.out.println("Entrou numa classe extendida ");
+		
 		currClass = symbolTable.getClass(n.i.s);
 		n.i.accept(this);
 		n.j.accept(this);
@@ -121,14 +131,14 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 	}
 
 	public Type visit(VarDecl n) {
-		System.out.println("Variável declarada ");
+		
 		n.i.accept(this);
 		return n.t.accept(this);
 	}
 
 	public Type visit(MethodDecl n) {
 		//Temos que checar se o return é do mesmo tipo que declarado
-		System.out.println("Método declarado ");
+		
 		currMethod = symbolTable.getMethod(n.i.s, currClass.getId());
 		
 		Type declaredType = n.t.accept(this);
@@ -146,7 +156,7 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 		Type returnedType = n.e.accept(this);
 		
 		if(!assertTypesAreEqual(returnedType, declaredType)) {
-			System.out.println("Type returned is not type declared");
+			System.err.println("Type returned is not type declared : cannot convert " + declaredType.toString()) ;
 			System.exit(0);
 		}
 		currMethod = null;
@@ -154,35 +164,29 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 	}
 
 	public Type visit(Formal n) {
-		System.out.println("Parametro declarado ");
 		n.i.accept(this);
 		return n.t.accept(this);
 	}
 
 	public Type visit(IntArrayType n) {
-		System.out.println("IntandArrayType");
 		return n;
 	}
 
 	public Type visit(BooleanType n) {
-		System.out.println("BooleanType " + n.toString());
 		return n;
 	}
 
 	public Type visit(IntegerType n) {
-		System.out.println("Integer Type");
 		return n;
 	}
 
 	// String s;
 	public Type visit(IdentifierType n) {
-		System.out.println("Identifier Type " + n.s);
 		return n;
 	}
 
 	// StatementList sl;
 	public Type visit(Block n) {
-		System.out.println("Bloco ");
 		for (int i = 0; i < n.sl.size(); i++) {
 			n.sl.elementAt(i).accept(this);
 		}
@@ -193,13 +197,12 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 	// Statement s1,s2;
 	public Type visit(If n) {
 		//Assert inside the if we got a boolean
-		System.out.println("If ");
 		Type statement1Type = n.s1.accept(this);
 		Type statement2Type = n.s2.accept(this);
 		Type expressionType = n.e.accept(this);
 	
 		if(!this.symbolTable.compareTypes(expressionType, new BooleanType())) {
-			System.out.println("Não é um boolean dentro do IF");
+			System.err.println("Não é um boolean dentro do IF");
 			System.exit(0);
 			return null;
 		}
@@ -210,24 +213,20 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 	// Exp e;
 	// Statement s;
 	public Type visit(While n) {
-		//Assert inside the while we got a boolean
-		System.out.println("While ");
-		
+		//Assert inside the while we got a boolean		
 		Type expressionType = n.e.accept(this);
 		
 		if(!this.symbolTable.compareTypes(expressionType, new BooleanType())) {
-			System.out.println("Não é um boolean dentro do While");
+			System.err.println("Não é um boolean dentro do While");
 			System.exit(0);
 			return null;
 		}
-		
 		n.s.accept(this);
 		return null;
 	}
 
 	// Exp e;
 	public Type visit(Print n) {
-		System.out.println("Print ");
 		n.e.accept(this);
 		return null;
 	}
@@ -241,7 +240,7 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 		Type typeUsed = n.e.accept(this);
 		
 		if(!(assertTypesAreEqual(typeDeclared, typeUsed))) {
-			System.out.println("Cannot convert these types: " +  typeDeclared + " To " + typeUsed);
+			System.err.println("Cannot convert these types: " +  typeDeclared + " To " + typeUsed);
 			System.exit(0);
 		}
 		n.i.accept(this);
@@ -255,7 +254,7 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 		Type indexAcessor = n.e2.accept(this);
 		
 		if(!(indexAcessor instanceof IntegerType )) {
-			System.out.println("O index não é um inteiro");
+			System.err.println("O index não é um inteiro");
 			return null;
 		}
 		
@@ -264,7 +263,7 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 		Type variableBeingUsedType = n.i.accept(this);
 		
 		if(!(variableDeclaredType.toString().equals(variableBeingUsedType.toString()))) {
-			System.out.println("Tipo usado nao bate com declarado");
+			System.err.println("Tipo usado nao bate com declarado");
 			return null;
 		}
 		
@@ -275,7 +274,6 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 
 	// Exp e1,e2;
 	public Type visit(And n) {
-		System.out.println("and");
 		n.e1.accept(this);
 		n.e2.accept(this);
 		return new BooleanType();
@@ -283,7 +281,6 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 
 	// Exp e1,e2;
 	public Type visit(LessThan n) {
-		System.out.println("<");
 		n.e1.accept(this);
 		n.e2.accept(this);
 		return new BooleanType();
@@ -291,7 +288,6 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 
 	// Exp e1,e2;
 	public Type visit(Plus n) {
-		System.out.println("+");
 		n.e1.accept(this);
 		n.e2.accept(this);
 		return new IntegerType();
@@ -299,7 +295,6 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 
 	// Exp e1,e2;
 	public Type visit(Minus n) {
-		System.out.println("-");
 		n.e1.accept(this);
 		n.e2.accept(this);
 		return new IntegerType();
@@ -307,7 +302,6 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 
 	// Exp e1,e2;
 	public Type visit(Times n) {
-		System.out.println("*");
 		n.e1.accept(this);
 		n.e2.accept(this);
 		return new IntegerType();
@@ -315,7 +309,6 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 
 	// Exp e1,e2;
 	public Type visit(ArrayLookup n) {
-		System.out.println("Array lookup");
 		n.e1.accept(this);
 		n.e2.accept(this);
 		return new IntegerType();
@@ -323,7 +316,6 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 
 	// Exp e;
 	public Type visit(ArrayLength n) {
-		System.out.println("Array length");
 		n.e.accept(this);
 		return null;
 	}
@@ -336,7 +328,6 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 		Type returnType = null;
 		
 		Type check = n.e.accept(this);
-		System.out.println("Call");
 		
 		if(n.e instanceof This) {
 			returnType = currClass.getMethod(n.i.s).type();
@@ -352,23 +343,27 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 			int i;
 			for ( i = 0; i < n.el.size(); i++) {
 				Type parametersTypes = n.el.elementAt(i).accept(this);
-				Type parametersDeclaredTypes = calledMethod.getParamAt(i).type();
+			
+				Variable parametersDeclared = calledMethod.getParamAt(i);
 				//check if there are enough parameters
-				if(parametersDeclaredTypes == null) {
-					System.out.println("Parameters differ in length");
+				if(parametersDeclared == null) {
+					System.err.println("Parameters differ in length in call : " + calledMethod.getId() +
+					"() in class " + currentClass.getId());
 					System.exit(0);
 					return null;
 				}
+				Type parametersDeclaredTypes = calledMethod.getParamAt(i).type();
 				//check if the types match
 				if(!(assertTypesAreEqual(parametersTypes, parametersDeclaredTypes))) {
-					System.out.println("Parameters types you declared do not match the used ones");
+					System.err.println("Parameters types you declared do not match the used ones in call : "
+							+ calledMethod.getId() );
 					System.exit(0);
 					return null;
 				}
 			}
 			//check if there are parameters left
 			if(calledMethod.getParamAt(i) != null) {
-				System.out.println("Parameters differ in length");
+				System.err.println("Parameters differ in length in call : " + calledMethod.getId());
 				System.exit(0);
 				return null;
 			}
@@ -384,62 +379,53 @@ public class TypeCheckVisitor implements IVisitor<Type> {
 
 	// int i;
 	public Type visit(IntegerLiteral n) {
-		System.out.println("Integer Literal " + n.i);
 		return new IntegerType();
 	}
 
 	public Type visit(True n) {
-		System.out.println("True " + n.toString());
 		return new BooleanType();
 	}
 
 	public Type visit(False n) {
-		System.out.println("False" + n.toString());
 		return new BooleanType();
 	}
 
 	// String s;
 	public Type visit(IdentifierExp n) {
-		System.out.println("IdentifierExp " + n.s);
 		Type t = symbolTable.getVarType(this.currMethod, this.currClass, n.s);
 		return t;
 	}
 
 	public Type visit(This n) {
-		System.out.println("This ");
 		return currClass.type();
 	}
 
 	// Exp e;
 	public Type visit(NewArray n) {
-		System.out.println("NewArray " + n.toString());
 		n.e.accept(this);
 		return new IntArrayType();
 	}
 
 	// Iid.dentifier i;
 	public Type visit(NewObject n) {
-		System.out.println("New Object " + n.i.s);
 		return n.i.accept(this);
 	}
 
 	// Exp e;
 	public Type visit(Not n) {
-		System.out.println("not");
 		n.e.accept(this);
 		return null;
 	}
 
 	// String s;
 	public Type visit(Identifier n) {
-		System.out.println("Identifier " + n.s);
 		if(currClass == null) {
-			Class c = symbolTable.getClass(n.s);
-			if(c == null) {
+			Class className = symbolTable.getClass(n.s);
+			if(className == null) {
 				System.err.println("error: cannot find symbol: " + n.toString());
 				System.exit(0);
 			}
-			return c.type();
+			return className.type();
 		}
 		if(currClass.containsVar(n.s)) {
 			return symbolTable.getVarType(currMethod, currClass, n.s);
