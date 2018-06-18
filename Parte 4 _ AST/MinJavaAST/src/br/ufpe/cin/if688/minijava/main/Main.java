@@ -4,6 +4,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -73,8 +75,18 @@ public class Main {
 		cdl.addElement(B);
 		cdl.addElement(C);
 		
-		//change test program here
-		InputStream stream = new FileInputStream("src/test/resources/BubbleSort.java"); 
+		
+		Map<Integer, String> tests = makeTests();		
+		for(int i = 0;i<7;i++) {
+			test(i, tests);
+		}
+			
+	}
+	
+	public static void test(int i, Map<Integer, String> tests ) {
+		String file = tests.get(i);
+		InputStream stream = new FileInputStream(file); 
+		
 		ANTLRInputStream input = new ANTLRInputStream(stream);
 		AntlrLexer lexer = new antlr.AntlrLexer(input);
 		CommonTokenStream token = new CommonTokenStream(lexer);
@@ -85,9 +97,17 @@ public class Main {
 		Program prog = (Program) new visitoragoravai().visit(new AntlrParser(token).goal());
 		prog.accept(stVis); 
 		prog.accept(new TypeCheckVisitor(stVis.getSymbolTable())); 
-
-		//prog.accept(new PrettyPrintVisitor());
-		
 	}
-
+	
+	public Map<Integer, String> makeTests() {
+		Map<Integer, String> testFilesToNumber = new HashMap<Integer, String>();
+		testFilesToNumber.put(0, "src/test/resources/BubbleSort.java");
+		testFilesToNumber.put(1, "src/test/resources/BinarySearch.java");
+		testFilesToNumber.put(2, "src/test/resources/LinearSearch.java");
+		testFilesToNumber.put(3, "src/test/resources/testingVaribleDeclarationMissMatch.java");
+		testFilesToNumber.put(4, "src/test/resources/testingNonBooleanConditional.java");
+		testFilesToNumber.put(5, "src/test/resources/quicksort.java");
+		testFilesToNumber.put(6, "src/test/resources/testingUndeclaredVariable.java");
+		return testFilesToNumber;
+	}
 }
