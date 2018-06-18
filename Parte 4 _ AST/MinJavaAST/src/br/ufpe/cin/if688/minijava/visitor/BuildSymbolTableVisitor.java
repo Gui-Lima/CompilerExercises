@@ -199,7 +199,7 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 			}
 		}
 		else{
-			if(!this.symbolTable.addClass(n.i.s, this.currClass.getId())){
+			if(!this.symbolTable.addClass(n.i.s, null)){
 				System.out.println("Já tem uma classe com esse nome");
 				return null;
 			}

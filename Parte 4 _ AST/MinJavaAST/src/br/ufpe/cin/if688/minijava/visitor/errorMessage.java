@@ -38,6 +38,11 @@ public class errorMessage {
 		System.err.println("Cannot find this variable : " + i.s + " in any method or class");
 	}
 	
+	public void badOperands(Type t1, Type t2, String op) {
+		System.err.println("Bad types for operand " + op + " : " + getNameFromType(t1) + " " +
+	getNameFromType(t2));
+	}
+	
 	public String getNameFromType(Type t1) {
 		if(t1 instanceof IntegerType) {
 			return "Integer";

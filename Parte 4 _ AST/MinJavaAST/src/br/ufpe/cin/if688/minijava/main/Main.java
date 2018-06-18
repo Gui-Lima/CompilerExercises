@@ -75,39 +75,42 @@ public class Main {
 		cdl.addElement(B);
 		cdl.addElement(C);
 		
+		Program p = new Program(main, cdl);
+		BuildSymbolTableVisitor bstv = new BuildSymbolTableVisitor();
+		bstv.visit(p);
 		
+		TypeCheckVisitor tcv = new TypeCheckVisitor(bstv.getSymbolTable());
+		tcv.visit(p);
+		
+		/*
+		int numberOfTests = 4	;
 		Map<Integer, String> tests = makeTests();		
-		for(int i = 0;i<7;i++) {
+		for(int i = 0;i<numberOfTests;i++) {
+			System.out.println("Testing file: " + tests.get(i));
 			test(i, tests);
 		}
+		*/
 			
 	}
 	
-	public static void test(int i, Map<Integer, String> tests ) {
+	public static void test(int i, Map<Integer, String> tests ) throws IOException {
 		String file = tests.get(i);
 		InputStream stream = new FileInputStream(file); 
-		
 		ANTLRInputStream input = new ANTLRInputStream(stream);
 		AntlrLexer lexer = new antlr.AntlrLexer(input);
 		CommonTokenStream token = new CommonTokenStream(lexer);
-		//atv 5 setup
 		BuildSymbolTableVisitor stVis = new BuildSymbolTableVisitor();
-		
-		
 		Program prog = (Program) new visitoragoravai().visit(new AntlrParser(token).goal());
 		prog.accept(stVis); 
 		prog.accept(new TypeCheckVisitor(stVis.getSymbolTable())); 
 	}
 	
-	public Map<Integer, String> makeTests() {
+	public static Map<Integer, String> makeTests() {
 		Map<Integer, String> testFilesToNumber = new HashMap<Integer, String>();
 		testFilesToNumber.put(0, "src/test/resources/BubbleSort.java");
-		testFilesToNumber.put(1, "src/test/resources/BinarySearch.java");
-		testFilesToNumber.put(2, "src/test/resources/LinearSearch.java");
-		testFilesToNumber.put(3, "src/test/resources/testingVaribleDeclarationMissMatch.java");
-		testFilesToNumber.put(4, "src/test/resources/testingNonBooleanConditional.java");
-		testFilesToNumber.put(5, "src/test/resources/quicksort.java");
-		testFilesToNumber.put(6, "src/test/resources/testingUndeclaredVariable.java");
+		testFilesToNumber.put(1, "src/test/resources/testingVaribleDeclarationMissMatch.java");
+		testFilesToNumber.put(2, "src/test/resources/testingNonBooleanConditional.java");
+		testFilesToNumber.put(3, "src/test/resources/testingUndeclaredVariable.java");
 		return testFilesToNumber;
 	}
 }
