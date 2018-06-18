@@ -28,7 +28,6 @@ class BBS{
  
     // Sort array of integers using Bublesort method
     public int Sort(){
-    char a;
 	int nt ;
 	int i ;
 	int aux02 ;
@@ -70,7 +69,7 @@ class BBS{
 	    System.out.println(number[j]);
 	    j = j + 1 ;
 	}
-	return a ;
+	return 0 ;
     }
     
     // Initialize array of integers
