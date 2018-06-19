@@ -215,6 +215,8 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 		for (int i = 0; i < n.ml.size(); i++) {
 			n.ml.elementAt(i).accept(this);
 		}
+		
+		this.currClass = null;
 		return null;
 	}
 
@@ -291,6 +293,7 @@ public class BuildSymbolTableVisitor implements IVisitor<Void> {
 		}
 		
 		n.e.accept(this);
+		currMethod = null;
 		return null;
 	}
 

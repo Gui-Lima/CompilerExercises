@@ -17,14 +17,19 @@ import br.ufpe.cin.if688.minijava.ast.BooleanType;
 import br.ufpe.cin.if688.minijava.ast.ClassDeclExtends;
 import br.ufpe.cin.if688.minijava.ast.ClassDeclList;
 import br.ufpe.cin.if688.minijava.ast.ClassDeclSimple;
+import br.ufpe.cin.if688.minijava.ast.Formal;
+import br.ufpe.cin.if688.minijava.ast.FormalList;
 import br.ufpe.cin.if688.minijava.ast.Identifier;
+import br.ufpe.cin.if688.minijava.ast.IdentifierExp;
 import br.ufpe.cin.if688.minijava.ast.IdentifierType;
 import br.ufpe.cin.if688.minijava.ast.IntegerLiteral;
 import br.ufpe.cin.if688.minijava.ast.IntegerType;
 import br.ufpe.cin.if688.minijava.ast.MainClass;
+import br.ufpe.cin.if688.minijava.ast.MethodDecl;
 import br.ufpe.cin.if688.minijava.ast.MethodDeclList;
 import br.ufpe.cin.if688.minijava.ast.Print;
 import br.ufpe.cin.if688.minijava.ast.Program;
+import br.ufpe.cin.if688.minijava.ast.StatementList;
 import br.ufpe.cin.if688.minijava.ast.VarDecl;
 import br.ufpe.cin.if688.minijava.ast.VarDeclList;
 import br.ufpe.cin.if688.minijava.visitor.BuildSymbolTableVisitor;
@@ -50,7 +55,44 @@ public class Main {
 				new Identifier("num")
 		));
 		
+		FormalList fl = new FormalList();
+		fl.addElement(new Formal(
+				new IntegerType(), 
+				new Identifier("x")
+		));
+		fl.addElement(new Formal(
+				new IntegerType(), 
+				new Identifier("y")
+		));
+		
+		VarDeclList vdlm1 = new VarDeclList();
+		vdlm1.addElement(new VarDecl(
+			new BooleanType(),
+			new Identifier("run")
+		));
+		vdlm1.addElement(new VarDecl(
+				new IntegerType(),
+				new Identifier("count")
+		));
+		
 		MethodDeclList mdl = new MethodDeclList();
+		mdl.addElement( new MethodDecl(
+				new IntegerType(),
+				new Identifier("func"),
+				fl,
+				vdlm1,
+				new StatementList(),
+				new IdentifierExp("count")
+		));
+		
+		mdl.addElement( new MethodDecl(
+				new IntegerType(),
+				new Identifier("func2"),
+				new FormalList(),
+				new VarDeclList(),
+				new StatementList(),
+				new IntegerLiteral(0)
+		));
 		
 		ClassDeclSimple A = new ClassDeclSimple(
 					new Identifier("A"), vdl1, mdl
@@ -75,42 +117,16 @@ public class Main {
 		cdl.addElement(B);
 		cdl.addElement(C);
 		
-		Program p = new Program(main, cdl);
-		BuildSymbolTableVisitor bstv = new BuildSymbolTableVisitor();
-		bstv.visit(p);
+		Program prog = new Program(main, cdl);
 		
-		TypeCheckVisitor tcv = new TypeCheckVisitor(bstv.getSymbolTable());
-		tcv.visit(p);
+		PrettyPrintVisitor ppv = new PrettyPrintVisitor();
+		ppv.visit(prog);
 		
-		/*
-		int numberOfTests = 4	;
-		Map<Integer, String> tests = makeTests();		
-		for(int i = 0;i<numberOfTests;i++) {
-			System.out.println("Testing file: " + tests.get(i));
-			test(i, tests);
-		}
-		*/
-			
-	}
-	
-	public static void test(int i, Map<Integer, String> tests ) throws IOException {
-		String file = tests.get(i);
-		InputStream stream = new FileInputStream(file); 
-		ANTLRInputStream input = new ANTLRInputStream(stream);
-		AntlrLexer lexer = new antlr.AntlrLexer(input);
-		CommonTokenStream token = new CommonTokenStream(lexer);
-		BuildSymbolTableVisitor stVis = new BuildSymbolTableVisitor();
-		Program prog = (Program) new visitoragoravai().visit(new AntlrParser(token).goal());
-		prog.accept(stVis); 
-		prog.accept(new TypeCheckVisitor(stVis.getSymbolTable())); 
-	}
-	
-	public static Map<Integer, String> makeTests() {
-		Map<Integer, String> testFilesToNumber = new HashMap<Integer, String>();
-		testFilesToNumber.put(0, "src/test/resources/BubbleSort.java");
-		testFilesToNumber.put(1, "src/test/resources/testingVaribleDeclarationMissMatch.java");
-		testFilesToNumber.put(2, "src/test/resources/testingNonBooleanConditional.java");
-		testFilesToNumber.put(3, "src/test/resources/testingUndeclaredVariable.java");
-		return testFilesToNumber;
+		BuildSymbolTableVisitor myAwesomeTable = new BuildSymbolTableVisitor();
+		myAwesomeTable.visit(prog);
+		
+		TypeCheckVisitor typeChecker = new TypeCheckVisitor(myAwesomeTable.getSymbolTable());
+		typeChecker.visit(prog);
+		
 	}
 }
