@@ -22,14 +22,18 @@ import br.ufpe.cin.if688.minijava.ast.FormalList;
 import br.ufpe.cin.if688.minijava.ast.Identifier;
 import br.ufpe.cin.if688.minijava.ast.IdentifierExp;
 import br.ufpe.cin.if688.minijava.ast.IdentifierType;
+import br.ufpe.cin.if688.minijava.ast.If;
 import br.ufpe.cin.if688.minijava.ast.IntegerLiteral;
 import br.ufpe.cin.if688.minijava.ast.IntegerType;
+import br.ufpe.cin.if688.minijava.ast.LessThan;
 import br.ufpe.cin.if688.minijava.ast.MainClass;
 import br.ufpe.cin.if688.minijava.ast.MethodDecl;
 import br.ufpe.cin.if688.minijava.ast.MethodDeclList;
 import br.ufpe.cin.if688.minijava.ast.Print;
 import br.ufpe.cin.if688.minijava.ast.Program;
+import br.ufpe.cin.if688.minijava.ast.Statement;
 import br.ufpe.cin.if688.minijava.ast.StatementList;
+import br.ufpe.cin.if688.minijava.ast.True;
 import br.ufpe.cin.if688.minijava.ast.VarDecl;
 import br.ufpe.cin.if688.minijava.ast.VarDeclList;
 import br.ufpe.cin.if688.minijava.visitor.BuildSymbolTableVisitor;
@@ -44,7 +48,6 @@ public class Main {
 				new Identifier("Testando"), 
 				new Print(new IntegerLiteral(2))
 		);
-		
 		VarDeclList vdl1 = new VarDeclList();
 		vdl1.addElement(new VarDecl(
 			new BooleanType(),
@@ -75,6 +78,7 @@ public class Main {
 				new Identifier("count")
 		));
 		
+
 		MethodDeclList mdl = new MethodDeclList();
 		mdl.addElement( new MethodDecl(
 				new IntegerType(),
@@ -84,7 +88,7 @@ public class Main {
 				new StatementList(),
 				new IdentifierExp("count")
 		));
-		
+	
 		mdl.addElement( new MethodDecl(
 				new IntegerType(),
 				new Identifier("func2"),
@@ -116,6 +120,12 @@ public class Main {
 		cdl.addElement(A);
 		cdl.addElement(B);
 		cdl.addElement(C);
+		
+		
+		/*In the tests file there are some progs builded the way above
+		 * so you can copy paste and test different errors. I did not use my own
+		 * prog builder couse it's leading to some errors.
+		 */
 		
 		Program prog = new Program(main, cdl);
 		
